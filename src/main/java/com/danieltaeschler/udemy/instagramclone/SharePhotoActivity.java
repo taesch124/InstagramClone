@@ -53,11 +53,12 @@ public class SharePhotoActivity extends AppCompatActivity {
 
     public void sharePhoto(View view) {
         final LinearLayout progressLinearLayout = (LinearLayout)findViewById(R.id.linlaHeaderProgress);
-        progressLinearLayout.setVisibility(View.VISIBLE);
+
         TextView caption = (TextView)findViewById(R.id.captionEditText);
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         if(mSelectedImage != null) {
+            progressLinearLayout.setVisibility(View.VISIBLE);
             mSelectedImage.compress(Bitmap.CompressFormat.JPEG, 80, stream);
             byte[] image = stream.toByteArray();
 
