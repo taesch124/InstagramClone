@@ -33,9 +33,9 @@ public class UserFeedActivity extends AppCompatActivity {
         mPhotoPostAdapter = new PhotoPostAdapter(this, mUserPosts);
         mUserFeedListView.setAdapter(mPhotoPostAdapter);
 
-        String username = getIntent().getStringExtra("username");
+        ArrayList<String> usernames = (ArrayList<String>) getIntent().getSerializableExtra("usernames");
         ParseQuery<ParseObject> userFeedQuery = ParseQuery.getQuery("PhotoPost");
-        userFeedQuery.whereEqualTo("username", username);
+        userFeedQuery.whereContainedIn("username", usernames);
         userFeedQuery.orderByDescending("createdAt");
         userFeedQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
@@ -59,8 +59,8 @@ public class UserFeedActivity extends AppCompatActivity {
                                     }
                                 }
                             });
-                        }
 
+                        }
                     }
                 } else {
                     Log.i("USER_FEED", e.toString());
