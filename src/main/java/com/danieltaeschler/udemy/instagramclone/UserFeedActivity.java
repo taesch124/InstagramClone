@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -18,25 +19,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserFeedActivity extends AppCompatActivity {
+    private final int imagesToLoad = 5;
+    private int imagesLoaded = 0;
 
     private ListView mUserFeedListView;
+    private ArrayList<String> usernames;
     private ArrayList<PhotoPost> mUserPosts;
     private PhotoPostAdapter mPhotoPostAdapter;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user_feed);
-
-        mUserFeedListView = (ListView)findViewById(R.id.userFeedListView);
-        mUserPosts = new ArrayList<>();
-        mPhotoPostAdapter = new PhotoPostAdapter(this, mUserPosts);
-        mUserFeedListView.setAdapter(mPhotoPostAdapter);
-
-        ArrayList<String> usernames = (ArrayList<String>) getIntent().getSerializableExtra("usernames");
+    private void loadImages() {
+        Log.d("LOADED", Integer.toString(imagesLoaded));
         ParseQuery<ParseObject> userFeedQuery = ParseQuery.getQuery("PhotoPost");
         userFeedQuery.whereContainedIn("username", usernames);
         userFeedQuery.orderByDescending("createdAt");
+        userFeedQuery.setSkip(imagesLoaded);
+        userFeedQuery.setLimit(imagesToLoad);
         userFeedQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
@@ -67,6 +64,49 @@ public class UserFeedActivity extends AppCompatActivity {
                 }
             }
         });
-
+        imagesLoaded += imagesToLoad;
     }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_user_feed);
+
+        mUserFeedListView = (ListView)findViewById(R.id.userFeedListView);
+        mUserPosts = new ArrayList<>();
+        mPhotoPostAdapter = new PhotoPostAdapter(this, mUserPosts);
+        mUserFeedListView.setAdapter(mPhotoPostAdapter);
+
+        usernames = (ArrayList<String>) getIntent().getSerializableExtra("usernames");
+        loadImages();
+
+        mUserFeedListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            boolean scrolling;
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                if(scrollState == SCROLL_STATE_IDLE) {
+                    scrolling = false;
+                } else if (scrollState == SCROLL_STATE_TOUCH_SCROLL) {
+                    scrolling = true;
+                }
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                int position = firstVisibleItem+visibleItemCount;
+                int limit = totalItemCount;
+
+                // Check if bottom has been reached
+                if (position >= limit && totalItemCount > 0 && scrolling) {
+                    if (this != null ) {
+                        scrolling = false;
+                        loadImages();
+                    }
+                }
+            }
+        });
+    }
+
+
 }

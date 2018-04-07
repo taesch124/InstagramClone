@@ -11,6 +11,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.ArrayList;
 
 /**
@@ -38,7 +40,8 @@ public class PhotoPostAdapter extends ArrayAdapter<PhotoPost> {
         ImageView image = (ImageView)convertView.findViewById(R.id.userFeedImageView);
 
         username.setText(post.getUsername());
-        image.setImageBitmap(post.getImage());
+        Glide.with(getContext()).load(post.getImage()).into(image);
+        //image.setImageBitmap(post.getImage());
         caption.setText(post.getCaption());
 
         return convertView;

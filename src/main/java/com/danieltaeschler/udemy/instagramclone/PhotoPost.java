@@ -10,16 +10,17 @@ import android.graphics.BitmapFactory;
 public class PhotoPost {
 
     private String mUsername;
-    private Bitmap mImage;
+    private byte[] mImage;
     private String mCaption;
 
     public PhotoPost(String username, byte[] imageByteArray, String caption) {
         mUsername = username;
         mCaption = caption;
-        mImage = BitmapFactory.decodeByteArray(imageByteArray, 0, imageByteArray.length);
+        mImage = imageByteArray;
     }
 
     public String getUsername() {return mUsername;}
-    public Bitmap getImage() {return mImage;}
+    public byte[] getImage() {return mImage;}
     public String getCaption() {return mCaption;}
+
 }

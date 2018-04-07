@@ -115,10 +115,11 @@ public class UserListActivity extends AppCompatActivity {
         mUserListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                startActionMode(multiChoiceModeListener);
                 mUserListView.setItemChecked(position, true);
                 Log.d("VIEW", view.toString());
                 view.setActivated(true);
-                startActionMode(multiChoiceModeListener);
+                parent.showContextMenuForChild(view);
             }
         });
 
